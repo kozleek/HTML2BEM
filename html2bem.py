@@ -55,12 +55,13 @@ with codecs.open("testdata/index.php", "r", "UTF-8") as f:
 # ======================================== #
 
 for block in structure.keys():
-    print "===================="
-    print "Module: %s " % block
-    print "===================="
-    print ""
-    for selector in structure[block]:
-        print ".%s{\n\t\n}\n" % selector
+    with codecs.open("output/" + block + ".scss" , "w", "UTF-8") as f:
+        f.write("/* ==================== */\n")
+        f.write("/* === %s */ \n" % block)
+        f.write("/* ==================== */\n\n")
+        for selector in structure[block]:
+            f.write(".%s{\n\t\n}\n\n" % selector)
+        f.close()
 
 
 
