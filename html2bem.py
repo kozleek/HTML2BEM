@@ -43,8 +43,10 @@ class ClassParser(HTMLParser):
 # parsovani souboru po radcich
 # ======================================== #
 
+filename = sys.argv[1]
+
 parser = ClassParser()
-with codecs.open("testdata/index.php", "r", "UTF-8") as f:
+with codecs.open(filename, "r", "UTF-8") as f:
     for line in f:
         if ((line != "") and (line != "\n")):
             line = line.strip().replace('\n','');
@@ -62,6 +64,4 @@ for block in structure.keys():
         for selector in structure[block]:
             f.write(".%s{\n\t\n}\n\n" % selector)
         f.close()
-
-
 
