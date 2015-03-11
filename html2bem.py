@@ -73,21 +73,20 @@ for cssClass in structureClasses:
 for block in structure.keys():
 
     fo = "output/" + block + ".scss"
+
+    # vystupni soubor neexistuje
     if not os.path.isfile( fo ):
-        fileExist = False
-    else:
-        fileExist = True
 
-    # vytvoreni noveho souboru
-    with open( fo , "a+") as f:
+        # vytvoreni noveho souboru
+        with open( fo , "w") as fw:
 
-        if( fileExist == False ):
-            f.write("/*\n")
-            f.write("=======================\n")
-            f.write("%s\n" % block)
-            f.write("=======================\n")
-            f.write("*/\n\n")
+            fw.write("/*\n")
+            fw.write("=======================\n")
+            fw.write("%s\n" % block)
+            fw.write("=======================\n")
+            fw.write("*/\n\n")
 
-        for selector in structure[block]:
-            f.write(".%s{\n\t\n}\n\n" % selector)
-        f.close()
+            # zapsani selektoru do souboru
+            for selector in structure[block]:
+                fw.write(".%s{\n\t\n}\n\n" % selector)
+            fw.close()
