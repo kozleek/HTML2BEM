@@ -45,7 +45,7 @@ with codecs.open(fi, "r", "UTF-8") as f:
     for line in f:
         if ((line != "") and (line != "\n")):
             line = line.strip().replace('\n','');
-            parser.feed( line.encode("UTF-8") )
+            parser.feed( line )
 
 # ======================================== #
 # parsovani globalniho pole nazvu trid
