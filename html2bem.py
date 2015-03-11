@@ -78,7 +78,7 @@ for block in structure.keys():
     if not os.path.isfile( fo ):
 
         # vytvoreni noveho souboru
-        with open( fo , "w") as fw:
+        with codecs.open( fo , "w", "UTF-8") as fw:
 
             fw.write("/*\n")
             fw.write("=======================\n")
@@ -90,3 +90,19 @@ for block in structure.keys():
             for selector in structure[block]:
                 fw.write(".%s{\n\t\n}\n\n" % selector)
             fw.close()
+
+    # vystupni soubor existuje
+    else:
+
+        fa = codecs.open( fo, "a", "UTF-8" );
+        for selector in structure[block]:
+
+            with codecs.open( fo , "r", "UTF-8") as fr:
+                fileContent = fr.read()
+
+                # pokud neni selektor v existujicim souboru tak ho pridej
+                if( fileContent.find(selector) == -1 ):
+                    fa.write(".%s{\n\t\n}\n\n" % selector)
+
+                fr.close()
+        fa.close()

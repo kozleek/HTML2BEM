@@ -10,6 +10,7 @@
 
 <div class="header">
     <h1 class="header__title">Nezev stranky</h1>
+    <h1 class="header__subtitle">Nezev stranky</h1>
 </div>
 
 <ul class="menu">
@@ -22,6 +23,9 @@
 
 <div class="footer">
     <p class="footer__copyright">&copy; 2015</p>
+    <p class="footer__text">Text paticka</p>
+    <p class="footer__text2">Text paticka</p>
+    <p class="footer__text3">Text paticka</p>
 </div>
 
 </body>
