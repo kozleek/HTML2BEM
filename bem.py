@@ -59,32 +59,3 @@ def getBEM ( cssClassName ):
         bem["modifier"] = getModifier(cssClassName)
 
     return bem
-
-def parseCss( cssClassNames ):
-    structure = {}
-
-    # prochazeni vsech atributu pocatecniho tagu
-    for attr in cssClassNames:
-
-        # parsuj jen class atribut
-        if attr[0] == "class":
-
-            # prochazeni vicenasobnych trid
-            allClasses = attr[1].split(" ")
-
-            for className in allClasses:
-
-                # pokud je css trida platny BEM selektor tak...
-                if( isBEM( className ) ):
-
-                    # zjisti nazev blocku a uloz si ho do definice struktury
-                    thisBemBlock = getBlock( className )
-                    if( thisBemBlock not in structure.keys() ):
-                        structure[thisBemBlock] = []
-
-                    # zjisti selektor a uloz si ho do definice struktury
-                    thisBemSelector = className.encode("UTF-8")
-                    if( thisBemSelector not in structure[thisBemBlock] ):
-                        structure[thisBemBlock].append( thisBemSelector )
-
-    return structure
