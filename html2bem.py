@@ -5,7 +5,6 @@ import codecs
 from bs4 import BeautifulSoup
 import bem
 
-
 # ======================================== #
 # textovy banner pro hlavicku dokumentu
 # ======================================== #
@@ -21,10 +20,11 @@ def banner( blockName ):
 # parametry prikazove radky
 # ======================================== #
 
+# pokud bude nejaky parametr tak ho pouzij jako nazev vstupniho souboru
 if len(sys.argv) > 1:
     fileName = sys.argv[1];
 else:
-    fileName = "testdata/index.php";
+    sys.exit("No input file");
 
 # ======================================== #
 # parser html dokumentu
