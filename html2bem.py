@@ -2,107 +2,74 @@
 import os
 import sys
 import codecs
-from HTMLParser import HTMLParser
+from bs4 import BeautifulSoup
 import bem
+
+
+# ======================================== #
+# textovy banner pro hlavicku dokumentu
+# ======================================== #
+
+def banner( blockName ):
+    fw.write("/*\n")
+    fw.write("=======================\n")
+    fw.write("%s\n" % blockName)
+    fw.write("=======================\n")
+    fw.write("*/\n\n")
 
 # ======================================== #
 # parser html dokumentu
 # ======================================== #
 
-class HTMLParser(HTMLParser):
-    def handle_starttag(self, tag, attrs):
-        # prochazeni vsech atributu pocatecniho tagu
-        for attr in attrs:
+soup = BeautifulSoup(open("testdata/index.php"), 'html.parser')
+allTags = soup.findAll();
+allClassesNames = [];
+allBlockNames = [];
 
-            # parsuj jen class atribut
-            if attr[0] == "class":
+# prochazeni vsech nalezenych tagu ze souboru
+for tag in allTags:
+  tagClass = tag.get('class');
+  # pridej jmeno tridy jen pokud nejake je a neni uz v ulozene v poli
+  if (tagClass != None) and (tagClass not in allClassesNames):
+    allClassesNames = allClassesNames + tagClass
 
-                # prochazeni vicenasobnych trid
-                cssClasses = attr[1].split(" ")
-                for cssClass in cssClasses:
-
-                    # pokud trida neni v globalnim poli nazvu trid tak ji tam pridej
-                    global structureClasses
-                    if( cssClass not in structureClasses ):
-                        structureClasses.append( cssClass )
+allClassesNames = sorted(list(set( allClassesNames )))
 
 # ======================================== #
-# hlavni program
+# prochazeni jednotlivych nazvu trid
 # ======================================== #
 
-structureClasses = []
-structure = {}
+for className in allClassesNames:
+    if( bem.isBEM( className ) ):
 
-# ======================================== #
-# parsovani dokumentu
-# naplneni globalniho pole nazvu trid
-# ======================================== #
-
-parser = HTMLParser()
-
-fi = "testdata/index.php"
-with codecs.open(fi, "r", "UTF-8") as f:
-    for line in f:
-        if ((line != "") and (line != "\n")):
-            line = line.strip().replace('\n','');
-            parser.feed( line )
-
-# ======================================== #
-# parsovani globalniho pole nazvu trid
-# ======================================== #
-
-for cssClass in structureClasses:
-
-    if( bem.isBEM( cssClass ) ):
         # zjisteni nazvu bloku
-        thisBlock = bem.getBlock( cssClass )
+        thisBlock = bem.getBlock( className )
         # zjisteni aktualniho selektoru
-        thisSelector = cssClass
+        thisSelector = className
 
-        # vytvoreni struktury dokumentu (pojmenovane pole)
-        if( thisBlock not in structure.keys() ):
-            structure[thisBlock] = []
-            structure[thisBlock].append( thisSelector )
-        else:
-            structure[thisBlock].append( thisSelector )
+        # seznam vsech blocks, pridej jen pokud jiz v poli neni
+        if( thisBlock not in allBlockNames ):
+            allBlockNames.append(thisBlock);
 
 # ======================================== #
-# tvorba souboru a obsahu
+# zapisovani do souboru
 # ======================================== #
 
-for block in structure.keys():
+for blockName in allBlockNames:
 
-    fo = "output/" + block + ".scss"
-
-    # vystupni soubor neexistuje
-    if not os.path.isfile( fo ):
+        # soubor do ktereho se bude zapisovat
+        fo = "output/" + blockName + ".scss"
 
         # vytvoreni noveho souboru
-        with codecs.open( fo , "w", "UTF-8") as fw:
+        with codecs.open( fo , "wa", "UTF-8") as fw:
 
-            fw.write("/*\n")
-            fw.write("=======================\n")
-            fw.write("%s\n" % block)
-            fw.write("=======================\n")
-            fw.write("*/\n\n")
+            # vytvoreni banneru pro dokument
+            banner(blockName);
 
-            # zapsani selektoru do souboru
-            for selector in structure[block]:
-                fw.write(".%s{\n\t\n}\n\n" % selector)
+            # vyhledani vsech trid ktere patri do daneho blocku
+            blockNameSelectors = [s for s in allClassesNames if blockName in s];
+            for blockNameSelector in blockNameSelectors:
+                fw.write(".%s{}\n\n" % blockNameSelector)
+
+            # ukonceni zapisu do souboru
             fw.close()
-
-    # vystupni soubor existuje
-    else:
-
-        fa = codecs.open( fo, "a", "UTF-8" );
-        for selector in structure[block]:
-
-            with codecs.open( fo , "r", "UTF-8") as fr:
-                fileContent = fr.read()
-
-                # pokud neni selektor v existujicim souboru tak ho pridej
-                if( fileContent.find(selector) == -1 ):
-                    fa.write(".%s{\n\t\n}\n\n" % selector)
-
-                fr.close()
-        fa.close()
