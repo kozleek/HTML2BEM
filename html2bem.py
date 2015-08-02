@@ -18,10 +18,19 @@ def banner( blockName ):
     fw.write("*/\n\n")
 
 # ======================================== #
+# parametry prikazove radky
+# ======================================== #
+
+if len(sys.argv) > 1:
+    fileName = sys.argv[1];
+else:
+    fileName = "testdata/index.php";
+
+# ======================================== #
 # parser html dokumentu
 # ======================================== #
 
-soup = BeautifulSoup(open("testdata/index.php"), 'html.parser')
+soup = BeautifulSoup(open(fileName), 'html.parser')
 allTags = soup.findAll();
 allClassesNames = [];
 allBlockNames = [];
