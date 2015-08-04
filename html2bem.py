@@ -5,16 +5,9 @@ import codecs
 from bs4 import BeautifulSoup
 import bem
 
-# ======================================== #
-# hlavni funkce skriptu
-# ======================================== #
-
 def main(argv):
 
-    # ======================================== #
-    # textovy banner pro hlavicku dokumentu
-    # ======================================== #
-
+    # textovy banner pro hlavicku .scss souboru
     def banner( blockName ):
         fw.write("/*\n")
         fw.write("=======================\n")
@@ -22,10 +15,7 @@ def main(argv):
         fw.write("=======================\n")
         fw.write("*/\n\n")
 
-    # ======================================== #
     # parametry prikazove radky
-    # ======================================== #
-
     # pokud bude nejaky parametr tak ho pouzij jako nazev vstupniho souboru
     if len(argv) > 1:
         fileName = argv[1]
@@ -33,13 +23,13 @@ def main(argv):
         # pokud neni zadan zadny vstupni soubor tak ukonci beh skriptu
         sys.exit("No input file")
 
-    # ======================================== #
     # parser html dokumentu
-    # ======================================== #
-
     soup = BeautifulSoup(open(fileName), 'html.parser')
+    # pole vsech nalezenych uzlu html dokumentu
     allTags = soup.findAll()
+    # pole pro vsechny nalezene tridy
     allClassesNames = []
+    # pole pro vsechny zname bloky
     allBlockNames = []
 
     # prochazeni vsech nalezenych tagu ze souboru
@@ -49,11 +39,8 @@ def main(argv):
         if (tagClass != None) and (tagClass not in allClassesNames):
             allClassesNames = allClassesNames + tagClass
 
+    # unikatni pole vsech trid serazene podle abecedy a bez duplicit
     allClassesNames = sorted(list(set( allClassesNames )))
-
-    # ======================================== #
-    # prochazeni jednotlivych nazvu trid
-    # ======================================== #
 
     # prochazeni jednotlivych nazvu trid
     for className in allClassesNames:
@@ -68,15 +55,19 @@ def main(argv):
             if( thisBlock not in allBlockNames ):
                 allBlockNames.append(thisBlock)
 
-    # ======================================== #
-    # zapisovani do souboru
-    # ======================================== #
+    # zapis do souboru -> tvorba vystupnich .scss souboru
+
+    # vytvoreni pozadovane adresarove struktury
+    outputPath = "output/modules"
+
+    if not os.path.exists(outputPath):
+        os.makedirs(outputPath)
 
     # prochazeni vsech nazvu blocks
     for blockName in allBlockNames:
 
         # soubor do ktereho se bude zapisovat
-        fo = "output/" + blockName + ".scss"
+        fo = "output/modules/" + blockName + ".scss"
         # vytvoreni noveho souboru
         with codecs.open( fo , "wa", "UTF-8") as fw:
 
