@@ -6,79 +6,90 @@ from bs4 import BeautifulSoup
 import bem
 
 # ======================================== #
-# textovy banner pro hlavicku dokumentu
+# hlavni funkce skriptu
 # ======================================== #
 
-def banner( blockName ):
-    fw.write("/*\n")
-    fw.write("=======================\n")
-    fw.write("%s\n" % blockName)
-    fw.write("=======================\n")
-    fw.write("*/\n\n")
+def main(argv):
 
-# ======================================== #
-# parametry prikazove radky
-# ======================================== #
+    # ======================================== #
+    # textovy banner pro hlavicku dokumentu
+    # ======================================== #
 
-# pokud bude nejaky parametr tak ho pouzij jako nazev vstupniho souboru
-if len(sys.argv) > 1:
-    fileName = sys.argv[1];
-else:
-    sys.exit("No input file");
+    def banner( blockName ):
+        fw.write("/*\n")
+        fw.write("=======================\n")
+        fw.write("%s\n" % blockName)
+        fw.write("=======================\n")
+        fw.write("*/\n\n")
 
-# ======================================== #
-# parser html dokumentu
-# ======================================== #
+    # ======================================== #
+    # parametry prikazove radky
+    # ======================================== #
 
-soup = BeautifulSoup(open(fileName), 'html.parser')
-allTags = soup.findAll();
-allClassesNames = [];
-allBlockNames = [];
+    # pokud bude nejaky parametr tak ho pouzij jako nazev vstupniho souboru
+    if len(argv) > 1:
+        fileName = argv[1]
+    else:
+        # pokud neni zadan zadny vstupni soubor tak ukonci beh skriptu
+        sys.exit("No input file")
 
-# prochazeni vsech nalezenych tagu ze souboru
-for tag in allTags:
-  tagClass = tag.get('class');
-  # pridej jmeno tridy jen pokud nejake je a neni uz v ulozene v poli
-  if (tagClass != None) and (tagClass not in allClassesNames):
-    allClassesNames = allClassesNames + tagClass
+    # ======================================== #
+    # parser html dokumentu
+    # ======================================== #
 
-allClassesNames = sorted(list(set( allClassesNames )))
+    soup = BeautifulSoup(open(fileName), 'html.parser')
+    allTags = soup.findAll()
+    allClassesNames = []
+    allBlockNames = []
 
-# ======================================== #
-# prochazeni jednotlivych nazvu trid
-# ======================================== #
+    # prochazeni vsech nalezenych tagu ze souboru
+    for tag in allTags:
+        tagClass = tag.get('class')
+        # pridej jmeno tridy jen pokud nejake je a neni uz v ulozene v poli
+        if (tagClass != None) and (tagClass not in allClassesNames):
+            allClassesNames = allClassesNames + tagClass
 
-for className in allClassesNames:
-    if( bem.isBEM( className ) ):
+    allClassesNames = sorted(list(set( allClassesNames )))
 
-        # zjisteni nazvu bloku
-        thisBlock = bem.getBlock( className )
-        # zjisteni aktualniho selektoru
-        thisSelector = className
+    # ======================================== #
+    # prochazeni jednotlivych nazvu trid
+    # ======================================== #
 
-        # seznam vsech blocks, pridej jen pokud jiz v poli neni
-        if( thisBlock not in allBlockNames ):
-            allBlockNames.append(thisBlock);
+    # prochazeni jednotlivych nazvu trid
+    for className in allClassesNames:
+        if( bem.isBEM( className ) ):
 
-# ======================================== #
-# zapisovani do souboru
-# ======================================== #
+            # zjisteni nazvu bloku
+            thisBlock = bem.getBlock( className )
+            # zjisteni aktualniho selektoru
+            thisSelector = className
 
-for blockName in allBlockNames:
+            # seznam vsech blocks, pridej jen pokud jiz v poli neni
+            if( thisBlock not in allBlockNames ):
+                allBlockNames.append(thisBlock)
+
+    # ======================================== #
+    # zapisovani do souboru
+    # ======================================== #
+
+    # prochazeni vsech nazvu blocks
+    for blockName in allBlockNames:
 
         # soubor do ktereho se bude zapisovat
         fo = "output/" + blockName + ".scss"
-
         # vytvoreni noveho souboru
         with codecs.open( fo , "wa", "UTF-8") as fw:
 
             # vytvoreni banneru pro dokument
-            banner(blockName);
+            banner(blockName)
 
             # vyhledani vsech trid ktere patri do daneho blocku
-            blockNameSelectors = [s for s in allClassesNames if blockName in s];
+            blockNameSelectors = [s for s in allClassesNames if blockName in s]
             for blockNameSelector in blockNameSelectors:
                 fw.write(".%s{}\n\n" % blockNameSelector)
 
             # ukonceni zapisu do souboru
             fw.close()
+
+if __name__ == "__main__":
+    main(sys.argv)
