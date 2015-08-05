@@ -2,6 +2,12 @@
 
 Python skript pro převod HTML dokumentů do CSS souborů podle BEM metodologie 
 
-Způsob použití:
+## Způsob použití:
 
 `python html2bem.py [filename]`
+
+## Výstup
+
+`output/modules/[blockname].scss`
+
+`output/main-styles.scss`
