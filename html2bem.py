@@ -8,12 +8,12 @@ import bem
 def main(argv):
 
     # textovy banner pro hlavicku .scss souboru
-    def banner( blockName ):
-        fw.write("/*\n")
-        fw.write("=======================\n")
-        fw.write("%s\n" % blockName)
-        fw.write("=======================\n")
-        fw.write("*/\n\n")
+    def banner( file, blockName ):
+        file.write("/*\n")
+        file.write("=======================\n")
+        file.write("%s\n" % blockName)
+        file.write("=======================\n")
+        file.write("*/\n\n")
 
     # parametry prikazove radky
     # pokud bude nejaky parametr tak ho pouzij jako nazev vstupniho souboru
@@ -59,28 +59,36 @@ def main(argv):
 
     # vytvoreni pozadovane adresarove struktury
     outputPath = "output/modules"
-
+    # pokud vystupni adresar neexistuje tak ho vytvor
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)
+
+    fMainSCSS = open("output/main-styles.scss",'wa')
 
     # prochazeni vsech nazvu blocks
     for blockName in allBlockNames:
 
+        fMainSCSSLine = '@import "modules/' + blockName + '";\n';
+        fMainSCSS.write(fMainSCSSLine)
+
         # soubor do ktereho se bude zapisovat
-        fo = "output/modules/" + blockName + ".scss"
+        fBlockName = outputPath + "/" + blockName + ".scss"
         # vytvoreni noveho souboru
-        with codecs.open( fo , "wa", "UTF-8") as fw:
+        fBlock = open(fBlockName,'wa')
 
-            # vytvoreni banneru pro dokument
-            banner(blockName)
+        # vytvoreni banneru pro dokument
+        banner(fBlock, blockName)
 
-            # vyhledani vsech trid ktere patri do daneho blocku
-            blockNameSelectors = [s for s in allClassesNames if blockName in s]
-            for blockNameSelector in blockNameSelectors:
-                fw.write(".%s{}\n\n" % blockNameSelector)
+        # vyhledani vsech trid ktere patri do daneho blocku
+        blockNameSelectors = [s for s in allClassesNames if blockName in s]
+        for blockNameSelector in blockNameSelectors:
+            fBlock.write(".%s{}\n\n" % blockNameSelector)
 
-            # ukonceni zapisu do souboru
-            fw.close()
+        # ukonceni zapisu do souboru
+        fBlock.close()
+
+    # ukonceni zapisu do hlavniho scss souboru
+    fMainSCSS.close()
 
 if __name__ == "__main__":
     main(sys.argv)
