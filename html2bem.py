@@ -44,10 +44,11 @@ def main(argv):
 
     # prochazeni jednotlivych nazvu trid
     for className in allClassesNames:
-        if( bem.isBEM( className ) ):
+        bemClass = bem.BEM(className)
+        if( bemClass.isBEM() ):
 
             # zjisteni nazvu bloku
-            thisBlock = bem.getBlock( className )
+            thisBlock = bemClass.getBlock()
             # zjisteni aktualniho selektoru
             thisSelector = className
 

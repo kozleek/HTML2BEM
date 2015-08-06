@@ -1,61 +1,52 @@
 
-# ======================================== #
-# jedna se o BEM selektor?
-# ======================================== #
+class BEM:
 
-def isBEM( cssClassName ):
-    if (("__" in cssClassName) or ("--" in cssClassName)):
-        return True
-    else:
-        return False
+    # inicializace tridy
+    def __init__(self, cssName):
+        self.cssName = cssName
 
-# ======================================== #
-# Block
-# ======================================== #
+    # jedna se o BEM selektor?
+    def isBEM(self):
+        if (("__" in self.cssName) or ("--" in self.cssName)):
+            return True
+        else:
+            return False
 
-def getBlock ( cssClassName ):
-    if isBEM(cssClassName):
-        bemBlock = cssClassName.split("--")[0].split("__")[:1]
-        return "".join(bemBlock).encode("UTF-8")
-    else:
-        return False
+    # Block
+    def getBlock(self):
+        if self.isBEM():
+            bemBlock = self.cssName.split("--")[0].split("__")[:1]
+            return "".join(bemBlock).encode("UTF-8")
+        else:
+            return False
 
-# ======================================== #
-# Element
-# ======================================== #
+    # Element
+    def getElement(self):
+        if self.isBEM():
+            bemElement = self.cssName.split("--")[0].split("__")[1:]
+            return "__".join(bemElement).encode("UTF-8")
+        else:
+            return False
 
-def getElement ( cssClassName ):
-    if isBEM(cssClassName):
-        bemElement = cssClassName.split("--")[0].split("__")[1:]
-        return "__".join(bemElement).encode("UTF-8")
-    else:
-        return False
-
-# ======================================== #
-# Modifier
-# ======================================== #
-
-def getModifier ( cssClassName ):
-    if isBEM(cssClassName):
-        bemModifier = cssClassName.split("--")[1:]
-        return "".join(bemModifier).encode("UTF-8")
-    else:
-        return False
+    # Modifier
+    def getModifier(self):
+        if self.isBEM():
+            bemModifier = self.cssName.split("--")[1:]
+            return "".join(bemModifier).encode("UTF-8")
+        else:
+            return False
 
 
-# ======================================== #
-# Rozklad na jednotlive casti BEM syntaxe
-# ======================================== #
+    # Rozklad na jednotlive casti BEM syntaxe
+    def getBEM(self):
+        bem = {};
 
-def getBEM ( cssClassName ):
-    bem = {};
+        bem["selector"] = self.cssName.encode("UTF-8")
+        bem["block"] = getBlock(self.cssName)
 
-    bem["selector"] = cssClassName.encode("UTF-8")
-    bem["block"] = getBlock(cssClassName)
+        if( getElement(self.cssName) ):
+            bem["element"] = getElement()
+        if( getModifier(self.cssName) ):
+            bem["modifier"] = getModifier()
 
-    if( getElement(cssClassName) ):
-        bem["element"] = getElement(cssClassName)
-    if( getModifier(cssClassName) ):
-        bem["modifier"] = getModifier(cssClassName)
-
-    return bem
+        return bem
